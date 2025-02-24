@@ -18,5 +18,11 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        // Register seeder ini, kemdian run php artisan migrate --seed
+        $this->call([
+            // ProdukSeeder::class,
+            PenjualanSeeder::class
+        ]);
     }
 }

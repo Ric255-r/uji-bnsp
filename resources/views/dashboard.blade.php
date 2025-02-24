@@ -9,17 +9,36 @@
   <div class="flex flex-wrap my-5">
     <div class="lg:w-4/12 md:w-4/12 lg:mb-0 md:mb-0 mb-3 w-full">
       <div class="flex flex-wrap shadow rounded-sm mx-2 h-24">
-        Hai
+        <div class="w-full px-6 py-3">
+          <h3 class="uppercase text-sm text-green-700">Total Unit Terjual</h3>
+          <p class="text-2xl font-medium pt-1 ">
+            <i class="bi bi-phone text-bold"></i> {{ array_sum($jlh_jual)}} Unit
+          </p>
+        </div>
+
       </div>
     </div>
     <div class="lg:w-4/12 md:w-4/12 lg:mb-0 md:mb-0 mb-3 w-full">
       <div class="flex flex-wrap shadow rounded-sm mx-2 h-24">
-        Hai
+        <div class="w-full px-6 py-3">
+          <h3 class="uppercase text-sm text-green-700">Omset Bulan Ini</h3>
+          <p class="text-2xl font-medium pt-1 ">
+            <i class="bi bi-cash text-bold"></i>  Rp. {{ number_format($now_omset, 0)}}
+          </p>
+        </div>
+
       </div>
     </div>
     <div class="lg:w-4/12 md:w-4/12 lg:mb-0 md:mb-0 mb-3 w-full">
       <div class="flex flex-wrap shadow rounded-sm mx-2 h-24">
-        Hai
+        <div class="w-full px-6 py-3">
+          <h3 class="uppercase text-sm text-green-700">Total Omset</h3>
+          <p class="text-2xl font-medium pt-1 ">
+            <i class="bi bi-cash-stack text-bold"></i> 
+            Rp. {{ number_format($total_omset, 0)}}
+          </p>
+        </div>
+
       </div>
     </div>
   </div>
@@ -57,7 +76,7 @@
         }
       },
       subtitle: {
-        text: 'Penjualan Bulanan', // Subtitle text
+        text: 'Chart Unit Terjual', // Subtitle text
         align: 'center',
         style: {
           fontSize: '14px',
@@ -67,13 +86,66 @@
         }
       },
       series: [{
-        name: 'sales',
-        data: [30, 40, 45, 50, 49, 60, 70, 91]
+        name: 'Unit HP',
+        data: @json($jlh_jual)
       }],
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug']
+        categories: setBulan(@json($isi_bulan))
       }
     };
+
+    function setBulan(arrBulan){
+      let TxtBln = [];
+      for (let i = 0; i < arrBulan.length; i++) {
+        const element = arrBulan[i].split("-")[1];
+
+        switch (element) {
+          case '01':
+            TxtBln.push("Januari");
+            break;
+          case '02':
+            TxtBln.push("Februari");
+            break;
+          case '03':
+            TxtBln.push("Maret");
+            break;
+          case '04':
+            TxtBln.push("April");
+            break;
+          case '05':
+            TxtBln.push("May");
+            break;
+          case '06':
+            TxtBln.push("Juni");
+            break;
+          case '07':
+            TxtBln.push("July");
+            break;
+          case '08':
+            TxtBln.push("Agustus");
+            break;
+          case '09':
+            TxtBln.push("September");
+            break;
+          case '10':
+            TxtBln.push("Oktober");
+            break;
+          case '11':
+            TxtBln.push("November");
+            break;
+          case '12':
+            TxtBln.push("Desember");
+            break;
+      
+          default:
+            break;
+        }
+        
+      }
+
+      return TxtBln;
+
+    }
 
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
@@ -84,7 +156,7 @@
         type: 'donut'
       },
       title: {
-        text: 'Sales Distribution', //  title
+        text: 'Akumulasi Brand Terlaris', //  title
         align: 'center',
         margin: 20, // utk margin bottom title
         style: {
@@ -94,8 +166,8 @@
           color: '#263238',
         }
       },
-      labels: ['Electronics', 'Clothing', 'Groceries', 'Accessories', 'Other'],
-      series: [25, 15, 30, 20, 10], 
+      labels: @json($arr_kategori),
+      series: @json($arr_jlh_user), 
       colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'], // Custom colors
       legend: {
         position: 'bottom' // Pindahkan legend ke bottom
