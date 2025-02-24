@@ -6,10 +6,10 @@
       border: 1px solid red;
     } */
   </style>
-  <div class="flex flex-wrap my-5">
-    <div class="lg:w-4/12 md:w-4/12 lg:mb-0 md:mb-0 mb-3 w-full">
+  <div class="flex flex-wrap mt-2 mb-5">
+    <div class="lg:w-4/12 md:w-4/12 lg:mb-0 md:mb-0 mb-3 w-full ">
       <div class="flex flex-wrap shadow rounded-sm mx-2 h-24">
-        <div class="w-full px-6 py-3">
+        <div class="w-full px-6 py-3 bg-white rounded">
           <h3 class="uppercase text-sm text-green-700">Total Unit Terjual</h3>
           <p class="text-2xl font-medium pt-1 ">
             <i class="bi bi-phone text-bold"></i> {{ array_sum($jlh_jual)}} Unit
@@ -20,7 +20,7 @@
     </div>
     <div class="lg:w-4/12 md:w-4/12 lg:mb-0 md:mb-0 mb-3 w-full">
       <div class="flex flex-wrap shadow rounded-sm mx-2 h-24">
-        <div class="w-full px-6 py-3">
+        <div class="w-full px-6 py-3 bg-white rounded">
           <h3 class="uppercase text-sm text-green-700">Omset Bulan Ini</h3>
           <p class="text-2xl font-medium pt-1 ">
             <i class="bi bi-cash text-bold"></i>  Rp. {{ number_format($now_omset, 0)}}
@@ -31,7 +31,7 @@
     </div>
     <div class="lg:w-4/12 md:w-4/12 lg:mb-0 md:mb-0 mb-3 w-full">
       <div class="flex flex-wrap shadow rounded-sm mx-2 h-24">
-        <div class="w-full px-6 py-3">
+        <div class="w-full px-6 py-3 bg-white rounded">
           <h3 class="uppercase text-sm text-green-700">Total Omset</h3>
           <p class="text-2xl font-medium pt-1 ">
             <i class="bi bi-cash-stack text-bold"></i> 
@@ -45,13 +45,13 @@
 
   <div class="flex flex-wrap">
     <div class="lg:w-7/12 md:w-7/12 lg:mb-0 mb-3 w-full">
-      <div class="flex flex-wrap shadow rounded-sm mx-2">
+      <div class="flex flex-wrap shadow rounded-sm mx-2 bg-white ">
         <div id="chart" class="w-full"></div>
       </div>
 
     </div>
     <div class="lg:w-5/12 md:w-5/12 lg:mb-0 mb-3 w-full">
-      <div class="flex flex-wrap shadow rounded-sm mx-2 lg:h-full md:h-full">
+      <div class="flex flex-wrap shadow rounded-sm mx-2 bg-white lg:h-full md:h-full">
         <div id="donutChart" class="w-full"></div>
       </div>
     </div>
@@ -68,6 +68,7 @@
       title: {
         text: 'Product Sales', // Judul Chart
         align: 'center', // peletakan title ('left', 'center', 'right')
+        margin: 12,
         style: {
           fontSize:  '15px', // Font size
           fontWeight:  'bold', // Font weight
@@ -178,7 +179,8 @@
     chart2.render();
 
     // Ganti Judul. tag id ini ada di sidebar.blade.php
-    document.getElementById('title-page').textContent = "Dashboard Page";
+    let titlePage = document.getElementById('title-page');
+    titlePage.textContent = "Dashboard Page";
 
-  </script>
+</script>
 @endsection

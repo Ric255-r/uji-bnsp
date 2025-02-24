@@ -86,7 +86,7 @@
   <div id="outer-content" class="font-bold ml-15 lg:ml-[300px]  h-screen" onclick="this.classList.contains('cursor-pointer') ? Close() : ''">
 
     <div id="inner-content">
-      <div class="flex flex-wrap shadow-md py-3">
+      <div class="flex flex-wrap shadow-md py-3 bg-white">
         <div class="w-10/12  pl-10 pt-2 text-center" id="title-page">
           
         </div>
@@ -120,6 +120,12 @@
   </div>
 
   <script>
+    const tagBody = document.getElementById('for-body');
+    const oriSidebar = document.getElementById("ori-sidebar");
+    const miniSidebar = document.getElementById("mini-sidebar");
+    const innerContent = document.getElementById("inner-content");
+    const outerContent = document.getElementById("outer-content");
+
     document.addEventListener('DOMContentLoaded', function() {
       // buat function handleResize utk dipanggil pas dom onload & addEventListener resize;
       let isResize = false; // global variable utk delay
@@ -156,6 +162,7 @@
       
         default:
           makeShadow('dashboard');
+          tagBody.style.cssText = "background: rgba(0, 0, 0, 0.100);";
           break;
       }
     });
@@ -168,11 +175,7 @@
       }
     }
 
-    const tagBody = document.getElementById('for-body');
-    const oriSidebar = document.getElementById("ori-sidebar");
-    const miniSidebar = document.getElementById("mini-sidebar");
-    const innerContent = document.getElementById("inner-content");
-    const outerContent = document.getElementById("outer-content");
+
 
     // ketika sidebar ori di open
     function Open() {
