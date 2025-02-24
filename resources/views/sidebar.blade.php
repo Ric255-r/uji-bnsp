@@ -98,16 +98,20 @@
           <div id="dropdown" class="z-10 w-44 rounded bg-white shadow hidden" data-popper-placement="bottom" >
             <ul class="py-1 text-sm text-gray-700 " aria-labelledby="dropdownDefault">
               <li>
-                <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+                <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                  <span class="uppercase">{{ Auth::user()->name }}</span>
+                  <br>
+                  {{ Auth::user()->email }}
+                </a>
+
+                <hr>
               </li>
+
               <li>
-                <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
-              </li>
-              <li>
-                <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
-              </li>
-              <li>
-                <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
+                <form action="{{ route('logout')}}" method="post" class="block  py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                  @csrf
+                  <input type="submit" class="w-full text-right cursor-pointer" value="Sign Out">
+                </form>
               </li>
             </ul>
           </div>

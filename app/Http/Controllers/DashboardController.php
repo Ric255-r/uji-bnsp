@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Penjualan;
 use DB;
+use Auth;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -11,74 +12,116 @@ class DashboardController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function login(Request $request) 
+    {
+        $this->validate($request, [
+            'email'=>'required',
+            'password'=>'required'
+        ]);
+
+        $query = DB::table('users')
+                    ->where('email', $request->email)
+                    ->first();
+
+        if($query){
+           $pass = $query->password;
+
+           if($pass == $request->password){
+                // log the user in
+                // bisa pake Auth::login($query->email)
+                Auth::loginUsingId($query->id);
+
+                return redirect('/');
+           }else{
+                session()->flash('error', 'Email / Password Salah!');
+                return redirect()->back();
+           }
+
+
+        }else{
+            session()->flash('error', 'Email Tidak Terdaftar!');
+            return redirect()->back();
+        }
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/login');
+    }
+
     public function index()
     {
-        // query count groupby berdasarkan bulan tanggal penjualan (bulan)
-        $forCount = Penjualan::selectRaw('DATE_FORMAT(tgl_jual, "%Y-%m") AS bulan')
-            ->selectRaw('COUNT(*) AS jlh_jual')
-            ->groupByRaw('DATE_FORMAT(tgl_jual, "%Y-%m")')
-            ->get();
+        if(Auth::check()){
+            // query count groupby berdasarkan bulan tanggal penjualan (bulan)
+            $forCount = Penjualan::selectRaw('DATE_FORMAT(tgl_jual, "%Y-%m") AS bulan')
+                ->selectRaw('COUNT(*) AS jlh_jual')
+                ->groupByRaw('DATE_FORMAT(tgl_jual, "%Y-%m")')
+                ->get();
 
-        // ini pake array karena menyesuaikan apexchart
-        $isiJlhJual = array();
-        $isiBln = array();
-        foreach ($forCount as $row) {
-            array_push($isiJlhJual, $row['jlh_jual']);
-            array_push($isiBln, $row['bulan']);
-        }
-
-        // query sum groupby berdasarkan tanggal penjualan (bulan) 
-        $omset = Penjualan::join('produk', 'penjualan.id_produk', '=', 'produk.id')
-            ->selectRaw('DATE_FORMAT(penjualan.tgl_jual, "%Y-%m") AS bulan')
-            ->selectRaw('SUM(produk.harga) AS total_jual')
-            ->groupByRaw('DATE_FORMAT(penjualan.tgl_jual, "%Y-%m")')
-            ->get();
-
-        // tampung seluruh omset dari query diatas
-        $totalOmset = 0;
-
-        // ini untuk cek omset bulan ini
-        $tgl = date("Y-m");
-        $splitNowMonth = explode("-", $tgl);
-        $nowOmset = 0;
-
-        foreach ($omset as $row) {
-            $rowTotalJual = $row['total_jual'];
-            $totalOmset += $rowTotalJual;
-
-            // split bulan
-            $rowBulan = $row['bulan'];
-            $splitRowBulan = explode("-", $rowBulan);
-
-            // kondisi kalau bulan sekarang sama dengan di database.
-            if($splitNowMonth[1] == $splitRowBulan[1]){
-                $nowOmset += $rowTotalJual;
+            // ini pake array karena menyesuaikan apexchart
+            $isiJlhJual = array();
+            $isiBln = array();
+            foreach ($forCount as $row) {
+                array_push($isiJlhJual, $row['jlh_jual']);
+                array_push($isiBln, $row['bulan']);
             }
+
+            // query sum groupby berdasarkan tanggal penjualan (bulan) 
+            $omset = Penjualan::join('produk', 'penjualan.id_produk', '=', 'produk.id')
+                ->selectRaw('DATE_FORMAT(penjualan.tgl_jual, "%Y-%m") AS bulan')
+                ->selectRaw('SUM(produk.harga) AS total_jual')
+                ->groupByRaw('DATE_FORMAT(penjualan.tgl_jual, "%Y-%m")')
+                ->get();
+
+            // tampung seluruh omset dari query diatas
+            $totalOmset = 0;
+
+            // ini untuk cek omset bulan ini
+            $tgl = date("Y-m");
+            $splitNowMonth = explode("-", $tgl);
+            $nowOmset = 0;
+
+            foreach ($omset as $row) {
+                $rowTotalJual = $row['total_jual'];
+                $totalOmset += $rowTotalJual;
+
+                // split bulan
+                $rowBulan = $row['bulan'];
+                $splitRowBulan = explode("-", $rowBulan);
+
+                // kondisi kalau bulan sekarang sama dengan di database.
+                if($splitNowMonth[1] == $splitRowBulan[1]){
+                    $nowOmset += $rowTotalJual;
+                }
+            }
+
+            // kategori
+            $groupKategori = Penjualan::join("produk", 'penjualan.id_produk', '=', 'produk.id')
+                                ->selectRaw("COUNT(penjualan.id_produk) AS jlh_user")
+                                ->selectRaw("produk.kategori")
+                                ->groupBy("produk.kategori")
+                                ->get();
+
+            $arrKategori = array();
+            $arrJlhUser = array();
+            foreach ($groupKategori as $row) {
+                array_push($arrKategori, $row['kategori']);
+                array_push($arrJlhUser, $row['jlh_user']);
+            }
+
+            return view('dashboard', [
+                'data_jual' => $forCount,
+                'jlh_jual'=>$isiJlhJual,
+                'isi_bulan'=>$isiBln,
+                'total_omset' => $totalOmset,
+                'now_omset' => $nowOmset,
+                'arr_kategori' => $arrKategori,
+                'arr_jlh_user' => $arrJlhUser
+            ]);
+        }else{
+            return redirect('/login');
         }
-
-        // kategori
-        $groupKategori = Penjualan::join("produk", 'penjualan.id_produk', '=', 'produk.id')
-                            ->selectRaw("COUNT(penjualan.id_produk) AS jlh_user")
-                            ->selectRaw("produk.kategori")
-                            ->groupBy("produk.kategori")
-                            ->get();
-
-        $arrKategori = array();
-        $arrJlhUser = array();
-        foreach ($groupKategori as $row) {
-            array_push($arrKategori, $row['kategori']);
-            array_push($arrJlhUser, $row['jlh_user']);
-        }
-
-        return view('dashboard', [
-            'data_jual' => $forCount,
-            'jlh_jual'=>$isiJlhJual,
-            'isi_bulan'=>$isiBln,
-            'total_omset' => $totalOmset,
-            'now_omset' => $nowOmset,
-            'arr_kategori' => $arrKategori,
-            'arr_jlh_user' => $arrJlhUser
-        ]);
     }
 
     /**

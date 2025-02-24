@@ -13,13 +13,16 @@ use App\Http\Controllers\DashboardController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::prefix('login')->group(function() {
+    Route::get('/', function(){
+        return view('login');
+    })->name('loginPage');
+
+    Route::post('/',[DashboardController::class, 'login'] )->name('postLogin');
+});
+Route::post('/logout',[DashboardController::class, 'logout'] )->name('logout');
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-
-// Route::get('/product', function () {
-//     return view('admin');
-// });
 
 Route::prefix('product')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('home');
