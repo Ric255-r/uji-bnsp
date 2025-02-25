@@ -24,7 +24,7 @@ Route::post('/logout',[DashboardController::class, 'logout'] )->name('logout');
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::prefix('product')->group(function () {
+Route::prefix('product')->middleware('auth')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('home');
     Route::get('/add', [ProductController::class, 'create'])->name('viewAddData');
     Route::post('/add', [ProductController::class, 'store'])->name("addData");
