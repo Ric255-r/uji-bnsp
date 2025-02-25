@@ -102,40 +102,40 @@
 
         switch (element) {
           case '01':
-            TxtBln.push("Januari");
+            TxtBln.push("Jan");
             break;
           case '02':
-            TxtBln.push("Februari");
+            TxtBln.push("Feb");
             break;
           case '03':
-            TxtBln.push("Maret");
+            TxtBln.push("Mar");
             break;
           case '04':
-            TxtBln.push("April");
+            TxtBln.push("Apr");
             break;
           case '05':
             TxtBln.push("May");
             break;
           case '06':
-            TxtBln.push("Juni");
+            TxtBln.push("Jun");
             break;
           case '07':
-            TxtBln.push("July");
+            TxtBln.push("Jul");
             break;
           case '08':
-            TxtBln.push("Agustus");
+            TxtBln.push("Aug");
             break;
           case '09':
-            TxtBln.push("September");
+            TxtBln.push("Sep");
             break;
           case '10':
-            TxtBln.push("Oktober");
+            TxtBln.push("Okt");
             break;
           case '11':
-            TxtBln.push("November");
+            TxtBln.push("Nov");
             break;
           case '12':
-            TxtBln.push("Desember");
+            TxtBln.push("Dec");
             break;
       
           default:

@@ -16,8 +16,16 @@
             Thumbnail
           </label>
           <div class="border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline">
-            <input accept=".jpg,.jpeg,.bmp,.png" type="file" id="files" class="hidden" onchange="handleFile(this.files)" />
-            <label for="files" class="cursor-pointer text-gray-400 " id="labelFile">Pilih file</label>
+            <input accept=".jpg,.jpeg,.bmp,.png" type="file" id="files" class="hidden" onchange="handleFile(this.files)"/>
+            <label for="files" class="cursor-pointer text-gray-400 " id="labelFile" >Pilih file</label>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Preview Thumbnail
+          </label>
+          <div class="border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline">
+            <img class="h-[100px] w-[100px]" id="preview-thumbnail" alt="img">
           </div>
         </div>
         <div class="mb-4">
@@ -67,82 +75,112 @@
       const harga = document.getElementById('harga').value;
 
       if(thumbnail === undefined) {
-        alert("Masukkan Gambar");
+        Swal.fire({
+          title: "Peringatan",
+          text: "Input Thumbnail",
+          icon: "warning"
+        });
+
       }else{
-
         const extensionFile = thumbnail.name.split('.')[1];      
-        switch (extensionFile) {
-          case 'jpg':
-          case 'jpeg':
-          case 'png':
-          case 'bmp':
+        const isValidatedFile = validateFile(extensionFile);
 
-            let formData = new FormData();
-            formData.append('_method', 'POST');
-            formData.append('csrf_token', '{{ csrf_token() }}');
-            formData.append('thumbnail', thumbnail);
-            formData.append('produk', produk);
-            formData.append('kategori', kategori == "-" ? "" : kategori);
-            formData.append('harga', harga)
+        if(isValidatedFile){
+          let formData = new FormData();
+          formData.append('_method', 'POST');
+          formData.append('csrf_token', '{{ csrf_token() }}');
+          formData.append('thumbnail', thumbnail);
+          formData.append('produk', produk);
+          formData.append('kategori', kategori == "-" ? "" : kategori);
+          formData.append('harga', harga)
 
 
-            axios.post("{{ route('addData')}}", formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            })
-            .then(function (_) {
-              Swal.fire({
-                title: "Success",
-                text: "Berhasil Tambah Data",
-                icon: "success"
-              });
-
-              document.getElementById('myForm').reset();
-              handleFile(); // buat handle label
-            })
-            .catch(function (error) {
-              console.warn(error);
-
-              if(error.response.status == 422){
-                Swal.fire({
-                  title: "Peringatan",
-                  text: "Cek Kembali inputan Data",
-                  icon: "warning"
-                });
-              }else{
-                Swal.fire({
-                  title: "Error",
-                  text: "Cek Console",
-                  icon: "error"
-                });
-              }
-            });
-
-            break;
-          default:
+          axios.post("{{ route('addData')}}", formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          .then(function (_) {
             Swal.fire({
-              title: "Peringatan",
-              text: "Format File Tidak Mendukung",
-              icon: "warning"
+              title: "Success",
+              text: "Berhasil Tambah Data",
+              icon: "success"
             });
-            break;
+
+            document.getElementById('myForm').reset();
+            handleFile(); // buat handle label
+
+            let imgTag = document.getElementById('preview-thumbnail');
+            imgTag.src = '';
+          })
+          .catch(function (error) {
+            console.warn(error);
+
+            if(error.response.status == 422){
+              Swal.fire({
+                title: "Peringatan",
+                text: "Cek Kembali inputan Data",
+                icon: "warning"
+              });
+            }else{
+              Swal.fire({
+                title: "Error",
+                text: "Cek Console",
+                icon: "error"
+              });
+            }
+          });
         }
 
       }
 
-
     });
 
+    // Untuk mainkan nama label file
     function handleFile(params = null) {
+      // params == this.files dari onchange label;
+
       const labelFile = document.getElementById("labelFile");
 
       if(params == null){
         labelFile.textContent = "Klik Untuk Ubah File"
 
       }else{
-        const namaFile = params[0].name.length < 15 ? params[0].name : params[0].name.substring(0, 15) + "...";
-        labelFile.textContent = namaFile + ". Klik Untuk Ubah File"
+        const file = params[0].name;
+        const isValidatedFile = validateFile(file.split('.')[1]);
+
+        if(isValidatedFile){
+          const checkedFile = file.length < 15 ? file : file.substring(0, 15) + "...";
+          labelFile.textContent = checkedFile + ". Klik Untuk Ubah File";
+
+          let reader = new FileReader();
+
+          reader.onload = function(){
+            let imgTag = document.getElementById('preview-thumbnail');
+            imgTag.src = reader.result;
+          };
+
+          reader.readAsDataURL(params[0]);
+        }
+      }
+    }
+
+    function validateFile(extFile){
+      switch (extFile) {
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'bmp':
+          return true;
+          break;
+        default:
+          Swal.fire({
+            title: "Peringatan",
+            text: "Format File Tidak Mendukung",
+            icon: "warning"
+          });
+          return false;
+          break;
       }
 
     }

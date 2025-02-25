@@ -54,10 +54,10 @@
             <td class="px-6 py-4">
               {{ $d->kategori }}
             </td>
-            <td class="px-6 py-4">
+            <td class="lg:px-6 px-0 text-center py-4">
               Rp. {{ number_format($d->harga, 0) }}
             </td>
-            <td class="px-6 py-4" colspan="2">
+            <td class="lg:px-6 px-0 text-center py-4" colspan="2">
               <a href="{{route('viewEditData', $d->id)}}">Edit</a> |
               <a class="cursor-pointer" role="button" onclick="deleteData({{ $d->id }}, this); return false">Delete</a>
             </td>

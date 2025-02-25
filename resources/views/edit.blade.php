@@ -22,6 +22,14 @@
           </div>
         </div>
         <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" id="label-thumbnail-img">
+            Thumbnail Lama
+          </label>
+          <div class="border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline">
+            <img class="h-[100px] w-[100px]" src="{{ asset('./storage/' . $data->thumbnail)}}" id="preview-thumbnail" alt="img">
+          </div>
+        </div>
+        <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="produk">
             Nama Produk
           </label>
@@ -66,10 +74,24 @@
         labelFile.textContent = "Klik Untuk Ubah File"
 
       }else{
-        const namaFile = params[0].name.length < 15 ? params[0].name : params[0].name.substring(0, 15) + "...";
-        labelFile.textContent = namaFile + ". Klik Untuk Ubah File"
-      }
+        const namaFile = params[0].name;
+        const isValidatedFile = validateFile(namaFile.split('.')[1]);
 
+        if(isValidatedFile){
+          const checkedFile = params[0].name.length < 15 ? params[0].name : params[0].name.substring(0, 15) + "...";
+          labelFile.textContent = checkedFile + ". Klik Untuk Ubah File";
+
+          let reader = new FileReader();
+          reader.onload = function(){
+            let imgTag = document.getElementById('preview-thumbnail');
+            imgTag.src = reader.result;
+
+            document.getElementById('label-thumbnail-img').textContent = 'Preview Thumbnail Baru';
+          }
+
+          reader.readAsDataURL(params[0]);
+        }
+      }
     }
 
     handleFile();
@@ -82,24 +104,37 @@
         this.submit(); // langsung submit klo dia g ubah2 file
       }else{
         const extensionFile = thumbnail.name.split('.')[1];
+        const isValidatedFile = validateFile(extensionFile);
 
-        switch (extensionFile) {
-          case 'jpg':
-          case 'jpeg':
-          case 'png':
-          case 'bmp':
-            this.submit();
-            break;
-
-          default:
-            alert("Format File Tidak Cocok")
-            break;
+        if(isValidatedFile){
+          this.submit();
         }
       }
-
     });
+
+    function validateFile(extFile){
+      switch (extFile) {
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'bmp':
+          return true;
+          break;
+
+        default:
+          Swal.fire({
+            title: "Peringatan",
+            text: "Format File Tidak Mendukung",
+            icon: "warning"
+          });
+          return false;
+          break;
+      }
+    }
 
     // Ganti Judul. tag id ini ada di sidebar.blade.php
     document.getElementById('title-page').textContent = "Edit Data";
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @endsection
